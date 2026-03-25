@@ -1,6 +1,4 @@
-“””
-personalities.py — 15プリセット、4軸人格パラメータ
-“””
+# personalities.py — 15プリセット、4軸人格パラメータ
 
 from **future** import annotations
 import random
