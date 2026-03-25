@@ -1,6 +1,4 @@
-“””
-server.py — FastAPI REST + WebSocket ConnectionManager（エンジン単体版）
-“””
+# server.py — FastAPI REST + WebSocket ConnectionManager（エンジン単体版）
 
 from **future** import annotations
 import json
