@@ -1,4 +1,4 @@
-“”“test_ai.py — AI全モジュールテスト”””
+# test_ai.py — AI全モジュールテスト
 import pytest, sys, os, json
 sys.path.insert(0, os.path.join(os.path.dirname(**file**), ‘..’, ‘..’))
 
