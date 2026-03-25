@@ -1,6 +1,4 @@
-“””
-night_resolver.py — 夜行動同時解決、呪殺、GJ、Day0処理
-“””
+# night_resolver.py — 夜行動同時解決、呪殺、GJ、Day0処理
 
 from **future** import annotations
 from dataclasses import dataclass, field
