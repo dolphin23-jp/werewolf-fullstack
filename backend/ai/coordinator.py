@@ -1,6 +1,4 @@
-“””
-coordinator.py — 議論オーケストレーション、投票生成、夜フェーズ実行、要約
-“””
+# coordinator.py — 議論オーケストレーション、投票生成、夜フェーズ実行、要約
 
 from **future** import annotations
 import asyncio
