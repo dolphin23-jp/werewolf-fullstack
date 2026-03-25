@@ -7,7 +7,7 @@ import sys
 import os
 import time
 
-sys.path.insert(0, os.path.dirname(**file**))
+sys.path.insert(0, os.path.dirname(__file__))
 
 from backend.engine.game import GameController
 from backend.engine.state import Phase
@@ -16,9 +16,9 @@ from backend.ai.ai_player import ClaudeClient
 from backend.ai.coordinator import AICoordinator
 
 async def run_e2e():
-print(”=” * 60)
-print(“E2E テスト（直接呼出し・モックモード）”)
-print(”=” * 60)
+print("=" * 60)
+print("E2E テスト（直接呼出し・モックモード）")
+print("=" * 60)
 
 ```
 # ── 1. ゲーム作成 ──
@@ -224,5 +224,5 @@ if status == "executed":
         print(f"  - 翌日遷移: ✅")
 ```
 
-if **name** == “**main**”:
+if __name__ == "__main__":
 asyncio.run(run_e2e())

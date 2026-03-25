@@ -8,10 +8,10 @@ from .roles import RoleName, Team, get_team, get_role_def
 from .state import GameState, Phase
 
 class VictoryType:
-VILLAGE = “village_win”
-WEREWOLF = “werewolf_win”
-FOX = “fox_win”
-DRAW = “draw”
+VILLAGE = "village_win"
+WEREWOLF = "werewolf_win"
+FOX = "fox_win"
+DRAW = "draw"
 
 @dataclass
 class VictoryResult:
@@ -21,7 +21,7 @@ reason: str
 player_results: dict[str, bool]
 
 class VictoryChecker:
-def **init**(self, state: GameState):
+def __init__(self, state: GameState):
 self.state = state
 
 ```

@@ -12,20 +12,20 @@ get_role_def, get_team, is_wolf, AlphaWolfTracker,
 )
 
 class Phase(str, Enum):
-WAITING = “waiting”
-NIGHT = “night”
-DAWN = “dawn”
-DISCUSSION = “discussion”
-VOTING = “voting”
-VOTE_RESULT = “vote_result”
-RUNOFF = “runoff”
-GAME_OVER = “game_over”
+WAITING = "waiting"
+NIGHT = "night"
+DAWN = "dawn"
+DISCUSSION = "discussion"
+VOTING = "voting"
+VOTE_RESULT = "vote_result"
+RUNOFF = "runoff"
+GAME_OVER = "game_over"
 
 class DeathCause(str, Enum):
-EXECUTED = “executed”
-ATTACKED = “attacked”
-CURSED = “cursed”
-FIRST_VICTIM = “first_victim”
+EXECUTED = "executed"
+ATTACKED = "attacked"
+CURSED = "cursed"
+FIRST_VICTIM = "first_victim"
 
 @dataclass
 class COInfo:
@@ -114,7 +114,7 @@ action_type: str
 target_id: str
 
 class GameState:
-def **init**(self, game_id: str):
+def __init__(self, game_id: str):
 self.game_id = game_id
 self.phase: Phase = Phase.WAITING
 self.day: int = 0

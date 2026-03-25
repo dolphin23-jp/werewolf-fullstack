@@ -12,25 +12,25 @@ from dataclasses import dataclass, field
 from .personalities import Personality
 
 META_PATTERNS = [
-r”AIとして”, r”プログラムとして”, r”言語モデル”, r”LLM”, r”クロード”, r”Claude”,
-r”アシスタント”, r”人工知能”, r”機械学習”, r”API”, r”トークン”, r”プロンプト”,
-r”システムプロンプト”, r”ロールプレイ”, r”シミュレーション”,
+r"AIとして", r"プログラムとして", r"言語モデル", r"LLM", r"クロード", r"Claude",
+r"アシスタント", r"人工知能", r"機械学習", r"API", r"トークン", r"プロンプト",
+r"システムプロンプト", r"ロールプレイ", r"シミュレーション",
 ]
-META_REGEX = re.compile(”|”.join(META_PATTERNS), re.IGNORECASE)
+META_REGEX = re.compile("|".join(META_PATTERNS), re.IGNORECASE)
 
 def filter_meta_expressions(text: str) -> str:
 sentences = re.split(r’(?<=[。！？\n])’, text)
 filtered = [s for s in sentences if not META_REGEX.search(s)]
-return “”.join(filtered).strip()
+return "".join(filtered).strip()
 
 def truncate_message(text: str, max_chars: int = 300) -> str:
 if len(text) <= max_chars:
 return text
 truncated = text[:max_chars]
-last_period = max(truncated.rfind(”。”), truncated.rfind(”！”), truncated.rfind(”？”))
+last_period = max(truncated.rfind("。"), truncated.rfind("！"), truncated.rfind("？"))
 if last_period > max_chars // 2:
 return truncated[:last_period + 1]
-return truncated + “…”
+return truncated + "…"
 
 def parse_json_response(text: str) -> Optional[dict]:
 # 1. 全体をJSONとして試す（最優先）
@@ -57,11 +57,11 @@ return None
 
 @dataclass
 class ReasoningMemo:
-trusted_seer: str = “”
+trusted_seer: str = ""
 suspects: list[dict] = field(default_factory=list)
 trusted: list[dict] = field(default_factory=list)
-execution_target: str = “”
-overall_thought: str = “”
+execution_target: str = ""
+overall_thought: str = ""
 
 ```
 def to_dict(self) -> dict:
@@ -81,10 +81,10 @@ def from_dict(cls, data: dict) -> ReasoningMemo:
 ```
 
 class ClaudeClient:
-def **init**(self, api_key: Optional[str] = None, mock_mode: bool = False):
+def __init__(self, api_key: Optional[str] = None, mock_mode: bool = False):
 self.mock_mode = mock_mode
-self.api_key = api_key or os.environ.get(“ANTHROPIC_API_KEY”, “”)
-if not self.api_key or not self.api_key.startswith(“sk-ant-”):
+self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
+if not self.api_key or not self.api_key.startswith("sk-ant-"):
 self.mock_mode = True
 self.client = None
 if not self.mock_mode:
@@ -139,7 +139,7 @@ def _mock_generate(self, system: str, messages: list[dict]) -> str:
 ```
 
 class AIPlayer:
-def **init**(self, player_id: str, player_name: str, personality: Personality, claude_client: ClaudeClient):
+def __init__(self, player_id: str, player_name: str, personality: Personality, claude_client: ClaudeClient):
 self.player_id = player_id
 self.player_name = player_name
 self.personality = personality

@@ -16,7 +16,7 @@ guard_success: bool = False
 messages: list[str] = field(default_factory=list)
 
 class NightResolver:
-def **init**(self, state: GameState):
+def __init__(self, state: GameState):
 self.state = state
 
 ```
@@ -117,11 +117,11 @@ def validate_night_action(state: GameState, actor_id: str, action_type: str, tar
 actor = state.get_player(actor_id)
 target = state.get_player(target_id)
 if not actor:
-return False, “プレイヤーが存在しません”
+return False, "プレイヤーが存在しません"
 if not target:
-return False, “対象プレイヤーが存在しません”
+return False, "対象プレイヤーが存在しません"
 if not actor.is_alive:
-return False, “死亡プレイヤーは行動できません”
+return False, "死亡プレイヤーは行動できません"
 
 ```
 if action_type == "divine":

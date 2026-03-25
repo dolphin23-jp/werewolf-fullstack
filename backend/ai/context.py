@@ -15,7 +15,7 @@ return int(jp_chars * 1.5 + en_chars * 0.3)
 MAX_CONTEXT_TOKENS = 100_000
 
 def build_system_prompt(personality: Personality, player_name: str) -> str:
-return f””“あなたは人狼ゲームに参加しているプレイヤー「{player_name}」です。
+return f"""あなたは人狼ゲームに参加しているプレイヤー「{player_name}」です。
 17人参加のオンラインチャット型人狼ゲームです。
 
 {personality.to_prompt_section()}
@@ -24,73 +24,73 @@ return f””“あなたは人狼ゲームに参加しているプレイヤー
 
 - 「AIとして」「プログラムとして」等のメタ発言は絶対に禁止
 - 発言は200文字以内を目安にしてください
-- 他のプレイヤーの発言内容に具体的に言及してください”””
+- 他のプレイヤーの発言内容に具体的に言及してください"""
 
 def build_game_state_context(state: GameState, viewer_id: str) -> str:
-lines = [f”【ゲーム状態】{state.day}日目 {_phase_jp(state.phase)}”]
+lines = [f"【ゲーム状態】{state.day}日目 {_phase_jp(state.phase)}"]
 alive = state.get_alive_players()
-alive_names = [f”{p.name}{’(自分)’ if p.player_id == viewer_id else ‘’}” for p in alive]
-lines.append(f”生存者({len(alive)}人): {’, ‘.join(alive_names)}”)
+alive_names = [f"{p.name}{’(自分)’ if p.player_id == viewer_id else ‘’}" for p in alive]
+lines.append(f"生存者({len(alive)}人): {’, ‘.join(alive_names)}")
 dead = [p for p in state.players.values() if not p.is_alive]
 if dead:
 dead_info = []
-cause_jp = {“executed”: “処刑”, “attacked”: “襲撃”, “cursed”: “呪殺”, “first_victim”: “初日犠牲”}
+cause_jp = {"executed": "処刑", "attacked": "襲撃", "cursed": "呪殺", "first_victim": "初日犠牲"}
 for d in dead:
 dr = [r for r in state.death_records if r.player_id == d.player_id]
-cause = cause_jp.get(dr[0].cause.value, “不明”) if dr else “不明”
-dead_info.append(f”{d.name}({dr[0].day}日目{cause})” if dr else d.name)
-lines.append(f”死亡者: {’, ‘.join(dead_info)}”)
+cause = cause_jp.get(dr[0].cause.value, "不明") if dr else "不明"
+dead_info.append(f"{d.name}({dr[0].day}日目{cause})" if dr else d.name)
+lines.append(f"死亡者: {’, ‘.join(dead_info)}")
 co_summary = state.get_co_summary()
 if co_summary:
-lines.append(“CO状況: “ + “ / “.join(f”{r}CO: {’, ’.join(n)}” for r, n in co_summary.items()))
-return “\n”.join(lines)
+lines.append("CO状況: " + " / ".join(f"{r}CO: {’, ’.join(n)}" for r, n in co_summary.items()))
+return "\n".join(lines)
 
 def build_role_context(state: GameState, player_id: str) -> str:
 player = state.players[player_id]
 rd = get_role_def(player.role)
-lines = [f”【あなたの役職: {rd.display_name}】”]
+lines = [f"【あなたの役職: {rd.display_name}】"]
 if player.role == RoleName.SEER:
-lines.append(“毎夜1人を占い、人狼かどうかを知ることができます。”)
+lines.append("毎夜1人を占い、人狼かどうかを知ることができます。")
 for dr in player.divine_results:
-lines.append(f”  {dr.day}日目夜: {state.players[dr.target_id].name} → {dr.result}”)
+lines.append(f"  {dr.day}日目夜: {state.players[dr.target_id].name} → {dr.result}")
 elif player.role == RoleName.MEDIUM:
-lines.append(“処刑された人が人狼かどうかを知ることができます。”)
+lines.append("処刑された人が人狼かどうかを知ることができます。")
 for mr in player.medium_results:
-lines.append(f”  {mr.day}日目: {state.players[mr.target_id].name} → {mr.result}”)
+lines.append(f"  {mr.day}日目: {state.players[mr.target_id].name} → {mr.result}")
 elif player.role == RoleName.HUNTER:
-lines.append(“2日目夜から毎夜1人を護衛できます（自分は不可）。”)
+lines.append("2日目夜から毎夜1人を護衛できます（自分は不可）。")
 elif player.role == RoleName.WEREWOLF:
 wolf_names = [state.players[wid].name for wid in state.get_wolf_ids() if wid != player_id]
-lines.append(f”あなたは人狼です。仲間: {’, ‘.join(wolf_names)}”)
+lines.append(f"あなたは人狼です。仲間: {’, ‘.join(wolf_names)}")
 if state.alpha_tracker:
 if state.alpha_tracker.is_alpha_wolf(player_id):
-lines.append(“あなたがアルファ狼です。襲撃先を決定してください。”)
+lines.append("あなたがアルファ狼です。襲撃先を決定してください。")
 elif player.role == RoleName.MADMAN:
-lines.append(“あなたは狂人です。人狼陣営ですが、人狼が誰かはわかりません。”)
+lines.append("あなたは狂人です。人狼陣営ですが、人狼が誰かはわかりません。")
 elif player.role == RoleName.FOX:
-lines.append(“あなたは妖狐です。襲撃では死にませんが、占われると呪殺されます。”)
+lines.append("あなたは妖狐です。襲撃では死にませんが、占われると呪殺されます。")
 elif player.role == RoleName.FREEMASON:
 partner_names = [state.players[fid].name for fid in state.freemason_ids if fid != player_id]
-lines.append(f”あなたは共有者です。相方: {’, ’.join(partner_names)}”)
+lines.append(f"あなたは共有者です。相方: {’, ’.join(partner_names)}")
 elif player.role == RoleName.VILLAGER:
-lines.append(“あなたは村人です。議論と投票で人狼を追い詰めてください。”)
-return “\n”.join(lines)
+lines.append("あなたは村人です。議論と投票で人狼を追い詰めてください。")
+return "\n".join(lines)
 
-def build_current_day_log(state: GameState, viewer_id: str, channel: str = “public”) -> str:
+def build_current_day_log(state: GameState, viewer_id: str, channel: str = "public") -> str:
 messages = state.get_chat_log(channel=channel, day=state.day)
 if not messages:
-return “”
-lines = [f”【{state.day}日目の議論ログ】”]
+return ""
+lines = [f"【{state.day}日目の議論ログ】"]
 for msg in messages:
-if msg.sender_id == “system”:
-lines.append(f”[システム] {msg.content}”)
+if msg.sender_id == "system":
+lines.append(f"[システム] {msg.content}")
 else:
-marker = “(自分)” if msg.sender_id == viewer_id else “”
-lines.append(f”{msg.sender_name}{marker}: {msg.content}”)
-return “\n”.join(lines)
+marker = "(自分)" if msg.sender_id == viewer_id else ""
+lines.append(f"{msg.sender_name}{marker}: {msg.content}")
+return "\n".join(lines)
 
 class DaySummaryManager:
-def **init**(self):
+def __init__(self):
 self.summaries: dict[int, str] = {}
 
 ```
@@ -118,22 +118,22 @@ def compress_oldest(self) -> None:
 
 def _format_memo(memo: dict) -> str:
 lines = []
-if memo.get(“trusted_seer”): lines.append(f”信用占い師: {memo[‘trusted_seer’]}”)
-if memo.get(“suspects”):
-lines.append(“疑い: “ + “, “.join(f”{s[‘name’]}({s[‘level’]})” for s in memo[“suspects”]))
-if memo.get(“trusted”):
-lines.append(“信頼: “ + “, “.join(f”{t[‘name’]}({t[‘level’]})” for t in memo[“trusted”]))
-if memo.get(“execution_target”): lines.append(f”処刑候補: {memo[‘execution_target’]}”)
-if memo.get(“overall_thought”): lines.append(f”総合判断: {memo[‘overall_thought’]}”)
-return “\n”.join(lines) if lines else “（メモなし）”
+if memo.get("trusted_seer"): lines.append(f"信用占い師: {memo[‘trusted_seer’]}")
+if memo.get("suspects"):
+lines.append("疑い: " + ", ".join(f"{s[‘name’]}({s[‘level’]})" for s in memo["suspects"]))
+if memo.get("trusted"):
+lines.append("信頼: " + ", ".join(f"{t[‘name’]}({t[‘level’]})" for t in memo["trusted"]))
+if memo.get("execution_target"): lines.append(f"処刑候補: {memo[‘execution_target’]}")
+if memo.get("overall_thought"): lines.append(f"総合判断: {memo[‘overall_thought’]}")
+return "\n".join(lines) if lines else "（メモなし）"
 
 def _phase_jp(phase: Phase) -> str:
-return {“waiting”: “待機中”, “night”: “夜”, “dawn”: “朝”, “discussion”: “昼議論”,
-“voting”: “投票”, “vote_result”: “投票結果”, “runoff”: “決選投票”,
-“game_over”: “ゲーム終了”}.get(phase.value, str(phase))
+return {"waiting": "待機中", "night": "夜", "dawn": "朝", "discussion": "昼議論",
+"voting": "投票", "vote_result": "投票結果", "runoff": "決選投票",
+"game_over": "ゲーム終了"}.get(phase.value, str(phase))
 
 class ContextBuilder:
-def **init**(self, state: GameState, summary_manager: DaySummaryManager):
+def __init__(self, state: GameState, summary_manager: DaySummaryManager):
 self.state = state
 self.summary_manager = summary_manager
 

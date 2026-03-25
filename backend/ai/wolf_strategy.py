@@ -8,16 +8,16 @@ from typing import Optional
 from backend.engine.roles import RoleName
 
 WOLF_PATTERNS = [
-(“alpha”, “偽占い1＋潜伏2”, 0.40),
-(“beta”,  “偽霊能1＋潜伏2”, 0.20),
-(“gamma”, “全潜伏”,         0.25),
-(“delta”, “偽占い1＋偽霊能1＋潜伏1”, 0.15),
+("alpha", "偽占い1＋潜伏2", 0.40),
+("beta",  "偽霊能1＋潜伏2", 0.20),
+("gamma", "全潜伏",         0.25),
+("delta", "偽占い1＋偽霊能1＋潜伏1", 0.15),
 ]
 
 MADMAN_STRATEGIES = [
-(“fake_seer”,   “占い騙り”, 0.45),
-(“fake_medium”, “霊能騙り”, 0.25),
-(“lurk”,        “潜伏”,     0.30),
+("fake_seer",   "占い騙り", 0.45),
+("fake_medium", "霊能騙り", 0.25),
+("lurk",        "潜伏",     0.30),
 ]
 
 @dataclass
@@ -34,7 +34,7 @@ strategy: str
 description: str
 
 class StrategyAssigner:
-def **init**(self, seed: Optional[int] = None):
+def __init__(self, seed: Optional[int] = None):
 self.rng = random.Random(seed)
 
 ```
@@ -68,7 +68,7 @@ def assign_madman_strategy(self) -> MadmanStrategy:
 ```
 
 class FakeResultGuard:
-def **init**(self, actor_id: str, actor_role: RoleName, wolf_ids: list[str]):
+def __init__(self, actor_id: str, actor_role: RoleName, wolf_ids: list[str]):
 self.actor_id = actor_id
 self.actor_role = actor_role
 self.wolf_ids = wolf_ids

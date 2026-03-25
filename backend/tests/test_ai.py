@@ -1,6 +1,6 @@
 # test_ai.py — AI全モジュールテスト
 import pytest, sys, os, json
-sys.path.insert(0, os.path.join(os.path.dirname(**file**), ‘..’, ‘..’))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ‘..’, ‘..’))
 
 from backend.engine.roles import RoleName, AlphaWolfTracker
 from backend.engine.state import GameState, Phase
@@ -22,82 +22,82 @@ assert len({p.preset_id for p in PERSONALITY_PRESETS}) == 15
 def test_valid_tones(self):
 for p in PERSONALITY_PRESETS: assert p.tone in TONE_DESCRIPTIONS
 def test_assign(self):
-a = assign_personalities([f”a{i}” for i in range(15)], seed=42)
+a = assign_personalities([f"a{i}" for i in range(15)], seed=42)
 assert len(a) == 15
 def test_prompt(self):
-assert “口調” in PERSONALITY_PRESETS[0].to_prompt_section()
+assert "口調" in PERSONALITY_PRESETS[0].to_prompt_section()
 def test_fallback(self):
 for p in PERSONALITY_PRESETS: assert len(p.get_fallback_message()) > 0
 
 class TestWolfStrategy:
 def test_assign(self):
-s = StrategyAssigner(seed=42).assign_wolf_strategy([“w1”,“w2”,“w3”])
-assert s.pattern in (“alpha”,“beta”,“gamma”,“delta”)
+s = StrategyAssigner(seed=42).assign_wolf_strategy(["w1","w2","w3"])
+assert s.pattern in ("alpha","beta","gamma","delta")
 def test_all_patterns(self):
-ps = {StrategyAssigner(seed=s).assign_wolf_strategy([“w1”,“w2”,“w3”]).pattern for s in range(200)}
-assert ps == {“alpha”,“beta”,“gamma”,“delta”}
+ps = {StrategyAssigner(seed=s).assign_wolf_strategy(["w1","w2","w3"]).pattern for s in range(200)}
+assert ps == {"alpha","beta","gamma","delta"}
 def test_madman(self):
 s = StrategyAssigner(seed=42).assign_madman_strategy()
-assert s.strategy in (“fake_seer”,“fake_medium”,“lurk”)
+assert s.strategy in ("fake_seer","fake_medium","lurk")
 def test_guard_wolf_black(self):
-g = FakeResultGuard(“w1”, RoleName.WEREWOLF, [“w1”,“w2”,“w3”])
-ok, _ = g.validate_fake_divine(“w2”, “人狼”, [“w1”,“w2”,“w3”,“v1”])
+g = FakeResultGuard("w1", RoleName.WEREWOLF, ["w1","w2","w3"])
+ok, _ = g.validate_fake_divine("w2", "人狼", ["w1","w2","w3","v1"])
 assert not ok
 def test_guard_wolf_white(self):
-g = FakeResultGuard(“w1”, RoleName.WEREWOLF, [“w1”,“w2”,“w3”])
-ok, _ = g.validate_fake_divine(“w2”, “人狼ではない”, [“w1”,“w2”,“w3”,“v1”])
+g = FakeResultGuard("w1", RoleName.WEREWOLF, ["w1","w2","w3"])
+ok, _ = g.validate_fake_divine("w2", "人狼ではない", ["w1","w2","w3","v1"])
 assert ok
 def test_guard_self(self):
-g = FakeResultGuard(“w1”, RoleName.WEREWOLF, [“w1”,“w2”])
-ok, _ = g.validate_fake_divine(“w1”, “人狼ではない”, [“w1”,“w2”,“v1”])
+g = FakeResultGuard("w1", RoleName.WEREWOLF, ["w1","w2"])
+ok, _ = g.validate_fake_divine("w1", "人狼ではない", ["w1","w2","v1"])
 assert not ok
 def test_guard_repeat(self):
-g = FakeResultGuard(“w1”, RoleName.WEREWOLF, [“w1”,“w2”])
-g.record_result(“v1”)
-ok, _ = g.validate_fake_divine(“v1”, “人狼ではない”, [“w1”,“w2”,“v1”])
+g = FakeResultGuard("w1", RoleName.WEREWOLF, ["w1","w2"])
+g.record_result("v1")
+ok, _ = g.validate_fake_divine("v1", "人狼ではない", ["w1","w2","v1"])
 assert not ok
 def test_valid_targets(self):
-g = FakeResultGuard(“w1”, RoleName.WEREWOLF, [“w1”,“w2”])
-g.record_result(“v1”)
-t = g.get_valid_targets([“w1”,“w2”,“v1”,“v2”])
-assert “w1” not in t and “v1” not in t and “v2” in t
+g = FakeResultGuard("w1", RoleName.WEREWOLF, ["w1","w2"])
+g.record_result("v1")
+t = g.get_valid_targets(["w1","w2","v1","v2"])
+assert "w1" not in t and "v1" not in t and "v2" in t
 
 class TestContext:
 def test_system_prompt(self):
-p = build_system_prompt(PERSONALITY_PRESETS[0], “テスト”)
-assert “テスト” in p and “人狼ゲーム” in p
+p = build_system_prompt(PERSONALITY_PRESETS[0], "テスト")
+assert "テスト" in p and "人狼ゲーム" in p
 def test_game_state(self):
-gc = GameController(seed=42); gc.create_game(“太郎”); gc.start_game()
-ctx = build_game_state_context(gc.state, “player_human”)
-assert “生存者” in ctx
+gc = GameController(seed=42); gc.create_game("太郎"); gc.start_game()
+ctx = build_game_state_context(gc.state, "player_human")
+assert "生存者" in ctx
 def test_role_ctx_seer(self):
-s = GameState(“t”); s.add_player(“s1”,“占太郎”,RoleName.SEER)
-assert “占い師” in build_role_context(s, “s1”)
+s = GameState("t"); s.add_player("s1","占太郎",RoleName.SEER)
+assert "占い師" in build_role_context(s, "s1")
 def test_summary_mgr(self):
-m = DaySummaryManager(); m.add_summary(2, “要約”)
-assert “2日目” in m.build_context(3)
+m = DaySummaryManager(); m.add_summary(2, "要約")
+assert "2日目" in m.build_context(3)
 def test_tokens(self):
-assert estimate_tokens(“日本語テスト”) > 0
+assert estimate_tokens("日本語テスト") > 0
 def test_builder(self):
-gc = GameController(seed=42); gc.create_game(“太郎”); gc.start_game()
+gc = GameController(seed=42); gc.create_game("太郎"); gc.start_game()
 b = ContextBuilder(gc.state, DaySummaryManager())
-s, m = b.build_discussion_context(“player_human”, PERSONALITY_PRESETS[0])
+s, m = b.build_discussion_context("player_human", PERSONALITY_PRESETS[0])
 assert len(s) > 0 and len(m) > 0
 
 class TestAIPlayer:
 def test_meta_filter(self):
-assert filter_meta_expressions(“AIとして考えると”) == “”
-assert filter_meta_expressions(“おはよう。”) == “おはよう。”
+assert filter_meta_expressions("AIとして考えると") == ""
+assert filter_meta_expressions("おはよう。") == "おはよう。"
 def test_truncate(self):
-assert len(truncate_message(“あ”*500)) <= 301
+assert len(truncate_message("あ"*500)) <= 301
 def test_parse_json(self):
-assert parse_json_response(’{“a”: 1}’)[“a”] == 1
-assert parse_json_response(’`json\n{"b": 2}\n`’)[“b”] == 2
-assert parse_json_response(“not json”) is None
+assert parse_json_response(’{"a": 1}’)["a"] == 1
+assert parse_json_response(’`json\n{"b": 2}\n`’)["b"] == 2
+assert parse_json_response("not json") is None
 def test_memo(self):
-m = ReasoningMemo(); m.trusted_seer = “太郎”
+m = ReasoningMemo(); m.trusted_seer = "太郎"
 m2 = ReasoningMemo.from_dict(m.to_dict())
-assert m2.trusted_seer == “太郎”
+assert m2.trusted_seer == "太郎"
 def test_mock_client(self):
 assert ClaudeClient(mock_mode=True).mock_mode
 
@@ -126,7 +126,7 @@ async def test_player_vote(self):
 
 class TestCoordinator:
 def _make(self):
-gc = GameController(seed=42); gc.create_game(“テスト”); gc.start_game()
+gc = GameController(seed=42); gc.create_game("テスト"); gc.start_game()
 co = AICoordinator(gc, ClaudeClient(mock_mode=True), seed=42)
 co.initialize()
 return gc, co
@@ -176,5 +176,5 @@ async def test_co(self):
     assert isinstance(r, list)
 ```
 
-if **name** == “**main**”:
-pytest.main([**file**, “-v”])
+if __name__ == "__main__":
+pytest.main([__file__, "-v"])

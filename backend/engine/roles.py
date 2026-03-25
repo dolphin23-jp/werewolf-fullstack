@@ -7,19 +7,19 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 class Team(str, Enum):
-VILLAGE = “village”
-WEREWOLF = “werewolf”
-FOX = “fox”
+VILLAGE = "village"
+WEREWOLF = "werewolf"
+FOX = "fox"
 
 class RoleName(str, Enum):
-VILLAGER = “villager”
-WEREWOLF = “werewolf”
-MADMAN = “madman”
-SEER = “seer”
-MEDIUM = “medium”
-HUNTER = “hunter”
-FOX = “fox”
-FREEMASON = “freemason”
+VILLAGER = "villager"
+WEREWOLF = "werewolf"
+MADMAN = "madman"
+SEER = "seer"
+MEDIUM = "medium"
+HUNTER = "hunter"
+FOX = "fox"
+FREEMASON = "freemason"
 
 @dataclass(frozen=True)
 class RoleDefinition:
@@ -36,44 +36,44 @@ counts_as_village: bool = True
 
 ROLE_DEFINITIONS: dict[RoleName, RoleDefinition] = {
 RoleName.VILLAGER: RoleDefinition(
-name=RoleName.VILLAGER, team=Team.VILLAGE, display_name=“村人”, count=7,
+name=RoleName.VILLAGER, team=Team.VILLAGE, display_name="村人", count=7,
 can_be_first_victim=True, has_night_action=False, has_night_chat=False,
 ),
 RoleName.WEREWOLF: RoleDefinition(
-name=RoleName.WEREWOLF, team=Team.WEREWOLF, display_name=“人狼”, count=3,
+name=RoleName.WEREWOLF, team=Team.WEREWOLF, display_name="人狼", count=3,
 can_be_first_victim=False, has_night_action=True, has_night_chat=True,
 is_wolf=True, counts_as_village=False,
 ),
 RoleName.MADMAN: RoleDefinition(
-name=RoleName.MADMAN, team=Team.WEREWOLF, display_name=“狂人”, count=1,
+name=RoleName.MADMAN, team=Team.WEREWOLF, display_name="狂人", count=1,
 can_be_first_victim=True, has_night_action=False, has_night_chat=False,
 counts_as_village=True,
 ),
 RoleName.SEER: RoleDefinition(
-name=RoleName.SEER, team=Team.VILLAGE, display_name=“占い師”, count=1,
+name=RoleName.SEER, team=Team.VILLAGE, display_name="占い師", count=1,
 can_be_first_victim=True, has_night_action=True, has_night_chat=False,
 ),
 RoleName.MEDIUM: RoleDefinition(
-name=RoleName.MEDIUM, team=Team.VILLAGE, display_name=“霊媒師”, count=1,
+name=RoleName.MEDIUM, team=Team.VILLAGE, display_name="霊媒師", count=1,
 can_be_first_victim=True, has_night_action=False, has_night_chat=False,
 ),
 RoleName.HUNTER: RoleDefinition(
-name=RoleName.HUNTER, team=Team.VILLAGE, display_name=“狩人”, count=1,
+name=RoleName.HUNTER, team=Team.VILLAGE, display_name="狩人", count=1,
 can_be_first_victim=True, has_night_action=True, has_night_chat=False,
 ),
 RoleName.FOX: RoleDefinition(
-name=RoleName.FOX, team=Team.FOX, display_name=“妖狐”, count=1,
+name=RoleName.FOX, team=Team.FOX, display_name="妖狐", count=1,
 can_be_first_victim=False, has_night_action=False, has_night_chat=False,
 immortal_to_attack=True, counts_as_village=True,
 ),
 RoleName.FREEMASON: RoleDefinition(
-name=RoleName.FREEMASON, team=Team.VILLAGE, display_name=“共有者”, count=2,
+name=RoleName.FREEMASON, team=Team.VILLAGE, display_name="共有者", count=2,
 can_be_first_victim=True, has_night_action=False, has_night_chat=True,
 ),
 }
 
 TOTAL_PLAYERS = sum(rd.count for rd in ROLE_DEFINITIONS.values())
-assert TOTAL_PLAYERS == 17, f”配役合計が17人ではありません: {TOTAL_PLAYERS}”
+assert TOTAL_PLAYERS == 17, f"配役合計が17人ではありません: {TOTAL_PLAYERS}"
 
 def get_role_def(role: RoleName) -> RoleDefinition:
 return ROLE_DEFINITIONS[role]
@@ -85,10 +85,10 @@ def get_team(role: RoleName) -> Team:
 return ROLE_DEFINITIONS[role].team
 
 def divine_result(target_role: RoleName) -> str:
-return “人狼” if target_role == RoleName.WEREWOLF else “人狼ではない”
+return "人狼" if target_role == RoleName.WEREWOLF else "人狼ではない"
 
 def medium_result(target_role: RoleName) -> str:
-return “人狼” if target_role == RoleName.WEREWOLF else “人狼ではない”
+return "人狼" if target_role == RoleName.WEREWOLF else "人狼ではない"
 
 def build_role_list() -> list[RoleName]:
 roles: list[RoleName] = []
@@ -98,7 +98,7 @@ assert len(roles) == 17
 return roles
 
 class RoleAssigner:
-def **init**(self, seed: Optional[int] = None):
+def __init__(self, seed: Optional[int] = None):
 self.rng = random.Random(seed)
 
 ```
@@ -120,7 +120,7 @@ def assign(self, player_ids: list[str], first_victim_id: str) -> dict[str, RoleN
 ```
 
 class AlphaWolfTracker:
-def **init**(self, wolf_ids: list[str], seed: Optional[int] = None):
+def __init__(self, wolf_ids: list[str], seed: Optional[int] = None):
 assert len(wolf_ids) >= 1
 self.rng = random.Random(seed)
 self.wolf_ids = list(wolf_ids)

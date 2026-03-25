@@ -14,7 +14,7 @@ import sys
 import os
 import time
 
-sys.path.insert(0, os.path.dirname(**file**))
+sys.path.insert(0, os.path.dirname(__file__))
 
 from backend.engine.game import GameController
 from backend.engine.state import Phase
@@ -23,14 +23,14 @@ from backend.ai.ai_player import ClaudeClient
 from backend.ai.coordinator import AICoordinator
 
 def detect_mode():
-key = os.environ.get(“ANTHROPIC_API_KEY”, “”)
-if key.startswith(“sk-ant-”):
-return “real”, key
-return “mock”, “”
+key = os.environ.get("ANTHROPIC_API_KEY", "")
+if key.startswith("sk-ant-"):
+return "real", key
+return "mock", ""
 
 async def play_one_game(mode: str, api_key: str, max_days: int = 4):
-“”“1ゲームをプレイする”””
-print(f”\n{‘🎮 リアルAPI’ if mode == ‘real’ else ‘🤖 モック’}モードで開始\n”)
+"""1ゲームをプレイする"""
+print(f"\n{‘🎮 リアルAPI’ if mode == ‘real’ else ‘🤖 モック’}モードで開始\n")
 
 ```
 gc = GameController(seed=None)  # ランダムシード
@@ -183,13 +183,13 @@ for pid in gc.state.player_order:
 ```
 
 ROLE_DISPLAY = {
-“seer”: “占い師”, “medium”: “霊媒師”, “hunter”: “狩人”,
-“werewolf”: “人狼”, “madman”: “狂人”, “fox”: “妖狐”,
-“freemason”: “共有者”, “villager”: “村人”,
+"seer": "占い師", "medium": "霊媒師", "hunter": "狩人",
+"werewolf": "人狼", "madman": "狂人", "fox": "妖狐",
+"freemason": "共有者", "villager": "村人",
 }
 
-if **name** == “**main**”:
+if __name__ == "__main__":
 mode, key = detect_mode()
-print(f”AI人狼ゲーム — Trial Run”)
-print(f”モード: {mode}”)
+print(f"AI人狼ゲーム — Trial Run")
+print(f"モード: {mode}")
 asyncio.run(play_one_game(mode, key, max_days=4))

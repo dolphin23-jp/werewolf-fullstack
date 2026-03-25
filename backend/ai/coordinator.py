@@ -15,7 +15,7 @@ from .context import ContextBuilder, DaySummaryManager
 from .ai_player import AIPlayer, ClaudeClient
 
 class AICoordinator:
-def **init**(self, game: GameController, claude_client: Optional[ClaudeClient] = None,
+def __init__(self, game: GameController, claude_client: Optional[ClaudeClient] = None,
 seed: Optional[int] = None):
 self.game = game
 self.state = game.state

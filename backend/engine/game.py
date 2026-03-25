@@ -20,15 +20,15 @@ recipients: Optional[list[str]] = None
 timestamp: float = field(default_factory=time.time)
 
 AI_NAMES = [
-“アカリ”, “ソラ”, “ユウキ”, “ミナト”, “ハルカ”,
-“レン”, “シオン”, “カエデ”, “リク”, “ヒナタ”,
-“ツムギ”, “アオイ”, “ナギサ”, “コハク”, “イブキ”,
+"アカリ", "ソラ", "ユウキ", "ミナト", "ハルカ",
+"レン", "シオン", "カエデ", "リク", "ヒナタ",
+"ツムギ", "アオイ", "ナギサ", "コハク", "イブキ",
 ]
 
-FIRST_VICTIM_NAME = “旅人”
+FIRST_VICTIM_NAME = "旅人"
 
 class GameController:
-def **init**(self, game_id: str = “game_001”, seed: Optional[int] = None):
+def __init__(self, game_id: str = "game_001", seed: Optional[int] = None):
 self.state = GameState(game_id=game_id)
 self.seed = seed
 self.rng = random.Random(seed)

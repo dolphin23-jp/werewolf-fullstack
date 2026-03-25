@@ -20,7 +20,7 @@ is_draw: bool = False
 round_number: int = 1
 
 class VoteManager:
-def **init**(self, state: GameState, seed: Optional[int] = None):
+def __init__(self, state: GameState, seed: Optional[int] = None):
 self.state = state
 self.rng = random.Random(seed)
 
