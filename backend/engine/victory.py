@@ -1,6 +1,4 @@
-“””
-victory.py — 勝利判定4パターン、個人勝敗
-“””
+# victory.py — 勝利判定4パターン、個人勝敗
 
 from **future** import annotations
 from dataclasses import dataclass
