@@ -1,4 +1,4 @@
-“”“test_engine.py — エンジンテスト”””
+# test_engine.py — エンジンテスト
 import pytest, sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(**file**), ‘..’, ‘..’))
 
