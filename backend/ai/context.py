@@ -1,6 +1,4 @@
-“””
-context.py — 5層コンテキスト構造、トークン量推計
-“””
+# context.py — 5層コンテキスト構造、トークン量推計
 
 from **future** import annotations
 from typing import Optional, Any
