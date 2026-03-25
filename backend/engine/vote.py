@@ -1,6 +1,4 @@
-“””
-vote.py — 投票システム
-“””
+# vote.py — 投票システム
 
 from **future** import annotations
 import random
