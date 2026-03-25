@@ -1,6 +1,4 @@
-“””
-wolf_strategy.py — 偽CO戦略(α/β/γ/δ)、FakeResultGuard
-“””
+# wolf_strategy.py — 偽CO戦略(α/β/γ/δ)、FakeResultGuard
 
 from **future** import annotations
 import random
