@@ -1,14 +1,14 @@
 #!/usr/bin/env python
-“””
-trial_run.py — サーバー起動＋HTTP経由E2Eテスト
 
-sk-ant- キーあり → リアルモード
-sk-ant- キーなし → モックモード
+# trial_run.py — サーバー起動＋HTTP経由E2Eテスト
 
-使い方:
-python trial_run.py              # モックモード
-ANTHROPIC_API_KEY=sk-ant-xxx python trial_run.py  # リアルモード
-“””
+# sk-ant- キーあり → リアルモード
+# sk-ant- キーなし → モックモード
+
+# 使い方:
+# python trial_run.py              # モックモード
+# ANTHROPIC_API_KEY=sk-ant-xxx python trial_run.py  # リアルモード
+
 import asyncio
 import sys
 import os
