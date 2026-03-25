@@ -1,6 +1,5 @@
-“””
-ai_player.py — Claude API呼出し、JSONパース、メタフィルタ、ReasoningMemo、フォールバック
-“””
+# ai_player.py — Claude API呼出し、JSONパース、メタフィルタ、ReasoningMemo、フォールバック
+
 
 from **future** import annotations
 import json
