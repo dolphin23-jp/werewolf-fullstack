@@ -1,6 +1,4 @@
-“””
-state.py — GameState, PlayerState, フェーズ遷移, 視点別情報
-“””
+# state.py — GameState, PlayerState, フェーズ遷移, 視点別情報
 
 from **future** import annotations
 import time
