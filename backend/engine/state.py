@@ -1,6 +1,6 @@
 # state.py — GameState, PlayerState, フェーズ遷移, 視点別情報
 
-from **future** import annotations
+from __future__ import annotations
 import time
 from enum import Enum
 from dataclasses import dataclass, field

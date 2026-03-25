@@ -1,6 +1,6 @@
 # context.py — 5層コンテキスト構造、トークン量推計
 
-from **future** import annotations
+from __future__ import annotations
 from typing import Optional, Any
 
 from backend.engine.state import GameState, Phase, ChatMessage

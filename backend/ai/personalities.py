@@ -1,6 +1,6 @@
 # personalities.py — 15プリセット、4軸人格パラメータ
 
-from **future** import annotations
+from __future__ import annotations
 import random
 from dataclasses import dataclass
 from typing import Optional

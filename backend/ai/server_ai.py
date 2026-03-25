@@ -1,6 +1,6 @@
 # server_ai.py — AI統合FastAPIサーバー
 
-from **future** import annotations
+from __future__ import annotations
 import asyncio
 import os
 from typing import Optional

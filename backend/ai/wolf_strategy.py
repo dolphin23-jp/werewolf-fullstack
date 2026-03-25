@@ -1,6 +1,6 @@
 # wolf_strategy.py — 偽CO戦略(α/β/γ/δ)、FakeResultGuard
 
-from **future** import annotations
+from __future__ import annotations
 import random
 from dataclasses import dataclass, field
 from typing import Optional

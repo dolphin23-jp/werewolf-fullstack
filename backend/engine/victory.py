@@ -1,6 +1,6 @@
 # victory.py — 勝利判定4パターン、個人勝敗
 
-from **future** import annotations
+from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 

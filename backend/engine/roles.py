@@ -1,6 +1,6 @@
 # roles.py — 役職定義、陣営、属性、配役、アルファ狼、RoleAssigner 17人構成: 村人x7, 人狼x3, 狂人x1, 占い師x1, 霊媒師x1, 狩人x1, 妖狐x1, 共有者x2
 
-from **future** import annotations
+from __future__ import annotations
 import random
 from enum import Enum
 from dataclasses import dataclass, field

@@ -1,6 +1,6 @@
 # server.py — FastAPI REST + WebSocket ConnectionManager（エンジン単体版）
 
-from **future** import annotations
+from __future__ import annotations
 import json
 import asyncio
 from typing import Optional

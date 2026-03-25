@@ -1,7 +1,7 @@
 # ai_player.py — Claude API呼出し、JSONパース、メタフィルタ、ReasoningMemo、フォールバック
 
 
-from **future** import annotations
+from __future__ import annotations
 import json
 import re
 import os
