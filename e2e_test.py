@@ -1,9 +1,7 @@
-“””
-e2e_test.py — E2Eテスト（サーバーなし・直接呼出し）
+# e2e_test.py — E2Eテスト（サーバーなし・直接呼出し）
+# GameController + AICoordinator を直接使って全フローを検証。
+# モックモードでAPIキー不要。
 
-GameController + AICoordinator を直接使って全フローを検証。
-モックモードでAPIキー不要。
-“””
 import asyncio
 import sys
 import os
