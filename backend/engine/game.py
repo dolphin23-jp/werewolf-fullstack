@@ -1,6 +1,4 @@
-“””
-game.py — GameController (ステートマシン)、GameEvent、CO
-“””
+# game.py — GameController (ステートマシン)、GameEvent、CO
 
 from **future** import annotations
 import random
