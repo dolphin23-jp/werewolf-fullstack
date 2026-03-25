@@ -1,6 +1,4 @@
-“””
-server_ai.py — AI統合FastAPIサーバー
-“””
+# server_ai.py — AI統合FastAPIサーバー
 
 from **future** import annotations
 import asyncio
