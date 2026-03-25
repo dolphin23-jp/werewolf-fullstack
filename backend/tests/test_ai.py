@@ -1,6 +1,6 @@
 # test_ai.py — AI全モジュールテスト
 import pytest, sys, os, json
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ‘..’, ‘..’))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from backend.engine.roles import RoleName, AlphaWolfTracker
 from backend.engine.state import GameState, Phase
@@ -91,8 +91,8 @@ assert filter_meta_expressions("おはよう。") == "おはよう。"
 def test_truncate(self):
 assert len(truncate_message("あ"*500)) <= 301
 def test_parse_json(self):
-assert parse_json_response(’{"a": 1}’)["a"] == 1
-assert parse_json_response(’`json\n{"b": 2}\n`’)["b"] == 2
+assert parse_json_response('{"a": 1}')["a"] == 1
+assert parse_json_response('`json\n{"b": 2}\n`')["b"] == 2
 assert parse_json_response("not json") is None
 def test_memo(self):
 m = ReasoningMemo(); m.trusted_seer = "太郎"

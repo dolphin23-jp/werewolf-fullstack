@@ -1,6 +1,6 @@
 """test_engine.py — エンジンテスト"""
 import pytest, sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ‘..’, ‘..’))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from backend.engine.roles import (RoleName, Team, ROLE_DEFINITIONS, RoleAssigner,
 AlphaWolfTracker, build_role_list, divine_result, medium_result, get_team, is_wolf)
@@ -216,7 +216,7 @@ def test_madman_count(self):
 class TestGameController:
 def test_create(self):
 r = GameController(seed=42).create_game("テスト")
-# create_game returns but doesn’t start - need to verify
+# create_game returns but doesn't start - need to verify
 gc = GameController(seed=42)
 r = gc.create_game("テスト")
 assert r["player_count"] == 17

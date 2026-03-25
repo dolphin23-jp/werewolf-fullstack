@@ -215,9 +215,9 @@ from fastapi.responses import FileResponse, HTMLResponse
 
 _frontend_dir = None
 for candidate in [
-os.path.join(os.path.dirname(__file__), ‘..’, ‘..’, ‘frontend’),
-os.path.join(os.getcwd(), ‘frontend’),
-‘/home/claude/werewolf-game/frontend’,
+os.path.join(os.path.dirname(__file__), '..', '..', 'frontend'),
+os.path.join(os.getcwd(), 'frontend'),
+'/home/claude/werewolf-game/frontend',
 ]:
 if os.path.isdir(candidate):
 _frontend_dir = os.path.abspath(candidate)

@@ -30,7 +30,7 @@ return "mock", ""
 
 async def play_one_game(mode: str, api_key: str, max_days: int = 4):
 """1ゲームをプレイする"""
-print(f"\n{‘🎮 リアルAPI’ if mode == ‘real’ else ‘🤖 モック’}モードで開始\n")
+print(f"\n{'🎮 リアルAPI' if mode == 'real' else '🤖 モック'}モードで開始\n")
 
 ```
 gc = GameController(seed=None)  # ランダムシード

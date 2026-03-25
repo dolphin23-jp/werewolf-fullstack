@@ -29,8 +29,8 @@ return f"""あなたは人狼ゲームに参加しているプレイヤー「{pl
 def build_game_state_context(state: GameState, viewer_id: str) -> str:
 lines = [f"【ゲーム状態】{state.day}日目 {_phase_jp(state.phase)}"]
 alive = state.get_alive_players()
-alive_names = [f"{p.name}{’(自分)’ if p.player_id == viewer_id else ‘’}" for p in alive]
-lines.append(f"生存者({len(alive)}人): {’, ‘.join(alive_names)}")
+alive_names = [f"{p.name}{'(自分)' if p.player_id == viewer_id else ''}" for p in alive]
+lines.append(f"生存者({len(alive)}人): {', '.join(alive_names)}")
 dead = [p for p in state.players.values() if not p.is_alive]
 if dead:
 dead_info = []
@@ -39,10 +39,10 @@ for d in dead:
 dr = [r for r in state.death_records if r.player_id == d.player_id]
 cause = cause_jp.get(dr[0].cause.value, "不明") if dr else "不明"
 dead_info.append(f"{d.name}({dr[0].day}日目{cause})" if dr else d.name)
-lines.append(f"死亡者: {’, ‘.join(dead_info)}")
+lines.append(f"死亡者: {', '.join(dead_info)}")
 co_summary = state.get_co_summary()
 if co_summary:
-lines.append("CO状況: " + " / ".join(f"{r}CO: {’, ’.join(n)}" for r, n in co_summary.items()))
+lines.append("CO状況: " + " / ".join(f"{r}CO: {', '.join(n)}" for r, n in co_summary.items()))
 return "\n".join(lines)
 
 def build_role_context(state: GameState, player_id: str) -> str:
@@ -61,7 +61,7 @@ elif player.role == RoleName.HUNTER:
 lines.append("2日目夜から毎夜1人を護衛できます（自分は不可）。")
 elif player.role == RoleName.WEREWOLF:
 wolf_names = [state.players[wid].name for wid in state.get_wolf_ids() if wid != player_id]
-lines.append(f"あなたは人狼です。仲間: {’, ‘.join(wolf_names)}")
+lines.append(f"あなたは人狼です。仲間: {', '.join(wolf_names)}")
 if state.alpha_tracker:
 if state.alpha_tracker.is_alpha_wolf(player_id):
 lines.append("あなたがアルファ狼です。襲撃先を決定してください。")
@@ -71,7 +71,7 @@ elif player.role == RoleName.FOX:
 lines.append("あなたは妖狐です。襲撃では死にませんが、占われると呪殺されます。")
 elif player.role == RoleName.FREEMASON:
 partner_names = [state.players[fid].name for fid in state.freemason_ids if fid != player_id]
-lines.append(f"あなたは共有者です。相方: {’, ’.join(partner_names)}")
+lines.append(f"あなたは共有者です。相方: {', '.join(partner_names)}")
 elif player.role == RoleName.VILLAGER:
 lines.append("あなたは村人です。議論と投票で人狼を追い詰めてください。")
 return "\n".join(lines)
@@ -118,13 +118,13 @@ def compress_oldest(self) -> None:
 
 def _format_memo(memo: dict) -> str:
 lines = []
-if memo.get("trusted_seer"): lines.append(f"信用占い師: {memo[‘trusted_seer’]}")
+if memo.get("trusted_seer"): lines.append(f"信用占い師: {memo['trusted_seer']}")
 if memo.get("suspects"):
-lines.append("疑い: " + ", ".join(f"{s[‘name’]}({s[‘level’]})" for s in memo["suspects"]))
+lines.append("疑い: " + ", ".join(f"{s['name']}({s['level']})" for s in memo["suspects"]))
 if memo.get("trusted"):
-lines.append("信頼: " + ", ".join(f"{t[‘name’]}({t[‘level’]})" for t in memo["trusted"]))
-if memo.get("execution_target"): lines.append(f"処刑候補: {memo[‘execution_target’]}")
-if memo.get("overall_thought"): lines.append(f"総合判断: {memo[‘overall_thought’]}")
+lines.append("信頼: " + ", ".join(f"{t['name']}({t['level']})" for t in memo["trusted"]))
+if memo.get("execution_target"): lines.append(f"処刑候補: {memo['execution_target']}")
+if memo.get("overall_thought"): lines.append(f"総合判断: {memo['overall_thought']}")
 return "\n".join(lines) if lines else "（メモなし）"
 
 def _phase_jp(phase: Phase) -> str:
