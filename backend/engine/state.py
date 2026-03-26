@@ -311,6 +311,11 @@ class GameState:
                       "team": get_team(p.role).value}
                 for pid, p in self.players.items()
             }
+            view["full_chat_log"] = [
+                {"sender_id": m.sender_id, "sender_name": m.sender_name, "content": m.content, 
+                 "channel": m.channel, "day": m.day, "phase": m.phase}
+                for m in self.chat_log
+            ]
         return view
 
     def to_debug_dict(self) -> dict[str, Any]:
