@@ -103,7 +103,7 @@ class ClaudeClient:
             return self._mock_generate(system, messages)
         try:
             response = self.client.messages.create(
-                model="claude-3-haiku-20240307", max_tokens=max_tokens,
+                model="claude-3-5-haiku-latest", max_tokens=max_tokens,
                 temperature=temperature, system=system, messages=messages)
             return response.content[0].text
         except Exception as e:
