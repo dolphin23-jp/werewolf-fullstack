@@ -126,7 +126,7 @@ def _format_memo(memo: dict) -> str:
     lines = []
     if memo.get("trusted_seer"): lines.append(f"信用占い師: {memo['trusted_seer']}")
     if memo.get("suspects"):
-        lines.append("疑い: " + ", ".join(f"{s['name']}({s['level']})" for s in memo["suspects"]))
+        lines.append("疑い: " + ", ".join(str(s) for s in memo["suspects"]))
     if memo.get("trusted"):
         lines.append("信頼: " + ", ".join(f"{t['name']}({t['level']})" for t in memo["trusted"]))
     if memo.get("execution_target"): lines.append(f"処刑候補: {memo['execution_target']}")
