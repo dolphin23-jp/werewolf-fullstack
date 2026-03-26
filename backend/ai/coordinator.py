@@ -65,6 +65,19 @@ class AICoordinator:
         results = []
         for pid in alive_ai:
             ai = self.ai_players[pid]
+            player = self.state.players[pid]
+            if not self.state.get_co_for_player(pid):
+                co_role = None
+                if player.role in (RoleName.SEER, RoleName.MEDIUM) and self.state.day >= 2:
+                    co_role = player.role
+                elif self.wolf_strategy and self.state.day >= 2:
+                    if pid == self.wolf_strategy.fake_seer_id: co_role = RoleName.SEER
+                    elif pid == self.wolf_strategy.fake_medium_id: co_role = RoleName.MEDIUM
+                elif self.madman_strategy and self.state.day >= 2 and player.role == RoleName.MADMAN:
+                    if self.madman_strategy.strategy == "fake_seer": co_role = RoleName.SEER
+                    elif self.madman_strategy.strategy == "fake_medium": co_role = RoleName.MEDIUM
+                if co_role:
+                    self.game.co(pid, co_role.value)
             if self.on_typing:
                 await self.on_typing(pid, True)
             system, messages = self.context_builder.build_discussion_context(pid, self.personalities[pid])

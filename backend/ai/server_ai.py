@@ -200,8 +200,6 @@ async def resolve_night():
     if result.get("status") == "resolved":
         await asyncio.sleep(0.5)
         game_controller.start_discussion()
-        if ai_coordinator:
-            await ai_coordinator.handle_ai_co()
     return result
 
 
