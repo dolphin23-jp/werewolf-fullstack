@@ -1,5 +1,9 @@
 # ai_player.py — Claude API呼出し、JSONパース、メタフィルタ、ReasoningMemo、フォールバック
-
+#
+# 変更点:
+# - generate_discussion_message: context.py側でJSON指示を直接含めるため、
+#   文字列replaceによるプロンプト差し替えを廃止
+# - ClaudeClient: ファクトリメソッド create() を追加
 
 from __future__ import annotations
 import json
@@ -20,12 +24,14 @@ META_REGEX = re.compile("|".join(META_PATTERNS), re.IGNORECASE)
 
 
 def filter_meta_expressions(text: str) -> str:
+    """メタ表現を含む文を除去する"""
     sentences = re.split(r'(?<=[。！？\n])', text)
     filtered = [s for s in sentences if not META_REGEX.search(s)]
     return "".join(filtered).strip()
 
 
 def truncate_message(text: str, max_chars: int = 300) -> str:
+    """発言を指定文字数以内に切り詰める"""
     if len(text) <= max_chars:
         return text
     truncated = text[:max_chars]
@@ -36,7 +42,8 @@ def truncate_message(text: str, max_chars: int = 300) -> str:
 
 
 def parse_json_response(text: str) -> Optional[dict]:
-    # 1. 全体をJSONとして試す（最優先）
+    """APIレスポンスからJSONを抽出する。3段階フォールバック"""
+    # 1. 全体をJSONとして試す
     try:
         return json.loads(text.strip())
     except (json.JSONDecodeError, ValueError):
@@ -48,16 +55,20 @@ def parse_json_response(text: str) -> Optional[dict]:
             return json.loads(json_match.group(1))
         except (json.JSONDecodeError, ValueError):
             pass
-    # 3. 最初の { から最後の } までを抽出（ネスト対応）
+    # 3. 最初の { から最後の } までを抽出
     first = text.find('{')
     last = text.rfind('}')
     if first != -1 and last > first:
         try:
-            return json.loads(text[first:last+1])
+            return json.loads(text[first:last + 1])
         except (json.JSONDecodeError, ValueError):
             pass
     return None
 
+
+# ─────────────────────────────────────────────
+#  ReasoningMemo — AIの推理メモ（最新スナップショット方式）
+# ─────────────────────────────────────────────
 
 @dataclass
 class ReasoningMemo:
@@ -68,9 +79,13 @@ class ReasoningMemo:
     overall_thought: str = ""
 
     def to_dict(self) -> dict:
-        return {"trusted_seer": self.trusted_seer, "suspects": self.suspects,
-                "trusted": self.trusted, "execution_target": self.execution_target,
-                "overall_thought": self.overall_thought}
+        return {
+            "trusted_seer": self.trusted_seer,
+            "suspects": self.suspects,
+            "trusted": self.trusted,
+            "execution_target": self.execution_target,
+            "overall_thought": self.overall_thought,
+        }
 
     @classmethod
     def from_dict(cls, data: dict) -> ReasoningMemo:
@@ -83,12 +98,14 @@ class ReasoningMemo:
         return m
 
 
+# ─────────────────────────────────────────────
+#  ClaudeClient — API呼び出し＋モック
+# ─────────────────────────────────────────────
+
 class ClaudeClient:
-    def __init__(self, api_key: Optional[str] = None, mock_mode: bool = False):
+    def __init__(self, api_key: str = "", mock_mode: bool = False):
         self.mock_mode = mock_mode
-        self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-        if not self.api_key or not self.api_key.startswith("sk-ant-"):
-            self.mock_mode = True
+        self.api_key = api_key
         self.client = None
         if not self.mock_mode:
             try:
@@ -96,6 +113,14 @@ class ClaudeClient:
                 self.client = anthropic.Anthropic(api_key=self.api_key)
             except Exception:
                 self.mock_mode = True
+
+    @staticmethod
+    def create(api_key: str = "") -> ClaudeClient:
+        """ファクトリメソッド: キーの有無でモード決定"""
+        key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
+        if key.startswith("sk-ant-"):
+            return ClaudeClient(api_key=key, mock_mode=False)
+        return ClaudeClient(mock_mode=True)
 
     async def generate(self, system: str, messages: list[dict],
                        max_tokens: int = 1024, temperature: float = 0.8) -> str:
@@ -127,10 +152,14 @@ class ClaudeClient:
         if "要約" in user_msg:
             return "この日は議論が行われました。"
         if "public_message" in user_msg:
-            return json.dumps({"public_message": "状況を整理して考えましょう。",
-                               "reasoning_memo": {"trusted_seer": "", "suspects": [],
-                                "trusted": [], "execution_target": "",
-                                "overall_thought": "情報収集段階"}}, ensure_ascii=False)
+            return json.dumps({
+                "public_message": "状況を整理して考えましょう。",
+                "reasoning_memo": {
+                    "trusted_seer": "", "suspects": [],
+                    "trusted": [], "execution_target": "",
+                    "overall_thought": "情報収集段階",
+                },
+            }, ensure_ascii=False)
         return random.choice([
             "おはようございます。まずは情報を整理しましょう。",
             "昨夜の結果を踏まえて考えると、気になる点があるんだよね。",
@@ -140,8 +169,13 @@ class ClaudeClient:
         ])
 
 
+# ─────────────────────────────────────────────
+#  AIPlayer — 1人のAIプレイヤー
+# ─────────────────────────────────────────────
+
 class AIPlayer:
-    def __init__(self, player_id: str, player_name: str, personality: Personality, claude_client: ClaudeClient):
+    def __init__(self, player_id: str, player_name: str,
+                 personality: Personality, claude_client: ClaudeClient):
         self.player_id = player_id
         self.player_name = player_name
         self.personality = personality
@@ -149,15 +183,11 @@ class AIPlayer:
         self.reasoning_memo = ReasoningMemo()
         self.max_retries = 2
 
-    async def generate_discussion_message(self, system: str, messages: list[dict]) -> tuple[str, Optional[dict]]:
-        enhanced = list(messages)
-        if enhanced:
-            enhanced[-1] = {"role": "user", "content": enhanced[-1]["content"].replace(
-                "あなたの発言を1つだけ生成してください。200文字以内で、あなたの人格に合った口調で発言してください。",
-                '以下のJSON形式で回答: {"public_message": "発言(200文字以内)", "reasoning_memo": {"trusted_seer": "", "suspects": [], "trusted": [], "execution_target": "", "overall_thought": ""}}'
-            )}
+    async def generate_discussion_message(self, system: str,
+                                           messages: list[dict]) -> tuple[str, Optional[dict]]:
+        """議論発言を生成する。context.py側でJSON出力指示が含まれている前提"""
         for _ in range(self.max_retries + 1):
-            raw = await self.client.generate(system, enhanced)
+            raw = await self.client.generate(system, messages)
             if not raw:
                 continue
             parsed = parse_json_response(raw)
@@ -169,13 +199,15 @@ class AIPlayer:
                     self.reasoning_memo = ReasoningMemo.from_dict(memo)
                 if msg:
                     return msg, self.reasoning_memo.to_dict()
+            # JSONパース失敗時: テキストをそのまま発言として使用
             msg = filter_meta_expressions(raw)
             msg = truncate_message(msg)
             if msg:
                 return msg, None
         return self.personality.get_fallback_message(), None
 
-    async def generate_vote(self, system: str, messages: list[dict], alive_names: list[str]) -> tuple[str, str]:
+    async def generate_vote(self, system: str, messages: list[dict],
+                            alive_names: list[str]) -> tuple[str, str]:
         for _ in range(self.max_retries + 1):
             raw = await self.client.generate(system, messages, temperature=0.5)
             if not raw:
