@@ -45,7 +45,7 @@ THINKING_DESCRIPTIONS = {
 
 DISCUSSION_DESCRIPTIONS = {
     "leader": "主導型。議題を提示し、議論の方向性を作る",
-    "follower": "追従型。他の発言に反応し、同意や反論で参加",
+    "follower": "反応型。他の発言を踏まえて同意・反論・補足を加える。ただし単なる繰り返しではなく、自分なりの根拠や新視点を必ず添える",
     "questioner": "質問型。疑問を投げかけ情報を引き出す",
     "independent": "独自型。独自の視点や理論を展開",
 }
