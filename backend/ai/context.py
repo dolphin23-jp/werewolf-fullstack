@@ -71,32 +71,74 @@ def build_role_context(state: GameState, player_id: str) -> str:
     player = state.players[player_id]
     rd = get_role_def(player.role)
     lines = [f"【あなたの役職: {rd.display_name}】"]
+    already_co = state.get_co_for_player(player_id)
 
     if player.role == RoleName.SEER:
         lines.append("毎夜1人を占い、人狼かどうかを知ることができます。")
-        for dr in player.divine_results:
-            lines.append(f"  {dr.day}日目夜: {state.players[dr.target_id].name} → {dr.result}")
+        if player.divine_results:
+            lines.append("あなたの占い結果:")
+            for dr in player.divine_results:
+                lines.append(f"  {dr.day}日目夜: {state.players[dr.target_id].name} → {dr.result}")
+        else:
+            lines.append("  まだ占い結果はありません。")
+        if state.day >= 2 and not already_co:
+            lines.append(
+                "【重要】今日の発言で「占い師COします」と明言してCOしてください。"
+                "その後、占い結果を報告してください（例: 「占い師COします。昨夜はXXを占い、白でした」）。"
+            )
+
     elif player.role == RoleName.MEDIUM:
         lines.append("処刑された人が人狼かどうかを知ることができます。")
-        for mr in player.medium_results:
-            lines.append(f"  {mr.day}日目: {state.players[mr.target_id].name} → {mr.result}")
+        if player.medium_results:
+            lines.append("あなたの霊媒結果:")
+            for mr in player.medium_results:
+                lines.append(f"  {mr.day}日目処刑者: {state.players[mr.target_id].name} → {mr.result}")
+        else:
+            lines.append(
+                "  ※まだ霊媒結果はありません。"
+                "初日(1日目)は処刑が行われないため、霊媒結果は2日目の処刑後から始まります。"
+                "1日目議論では「1日目の霊媒結果は…」のような誤った発言は絶対にしないでください。"
+            )
+        if state.day >= 2 and not already_co:
+            lines.append(
+                "【重要】今日の発言で「霊媒師COします」と明言してCOしてください"
+                "（例: 「霊媒師COします。昨日処刑されたXXは白でした」）。"
+                "結果がない場合は「まだ結果はありません」と正直に伝えてください。"
+            )
+
     elif player.role == RoleName.HUNTER:
         lines.append("2日目夜から毎夜1人を護衛できます（自分は不可）。")
+        if state.day >= 2 and not already_co:
+            lines.append(
+                "【重要】状況次第では今日の発言で「狩人COします」とCOすることを検討してください。"
+                "しかし狩人はCOすると標的になるリスクがあるため、状況を見て判断してください。"
+            )
+
     elif player.role == RoleName.WEREWOLF:
         wolf_names = [state.players[wid].name for wid in state.get_wolf_ids() if wid != player_id]
         lines.append(f"あなたは人狼です。仲間: {', '.join(wolf_names)}")
         if state.alpha_tracker:
             if state.alpha_tracker.is_alpha_wolf(player_id):
                 lines.append("あなたがアルファ狼です。襲撃先を決定してください。")
+
     elif player.role == RoleName.MADMAN:
         lines.append("あなたは狂人です。人狼陣営ですが、人狼が誰かはわかりません。")
+
     elif player.role == RoleName.FOX:
         lines.append("あなたは妖狐です。襲撃では死にませんが、占われると呪殺されます。")
+
     elif player.role == RoleName.FREEMASON:
         partner_names = [state.players[fid].name for fid in state.freemason_ids if fid != player_id]
         lines.append(f"あなたは共有者です。相方: {', '.join(partner_names)}")
+        if state.day >= 2 and not already_co:
+            lines.append(
+                "【重要】共有者としてCO戦略を判断してください。"
+                "FOを選ぶ場合は「共有者COします」と発言してCOしてください。"
+            )
+
     elif player.role == RoleName.VILLAGER:
         lines.append("あなたは村人です。議論と投票で人狼を追い詰めてください。")
+
     return "\n".join(lines)
 
 

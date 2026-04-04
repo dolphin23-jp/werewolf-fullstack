@@ -12,6 +12,7 @@
 from __future__ import annotations
 import asyncio
 import random
+import re
 import traceback
 from typing import Optional, Callable, Awaitable
 
@@ -23,6 +24,29 @@ from .personalities import Personality, assign_personalities
 from .wolf_strategy import StrategyAssigner, WolfStrategy, MadmanStrategy, FakeResultGuard
 from .context import ContextBuilder, DaySummaryManager
 from .ai_player import AIPlayer, ClaudeClient
+
+
+# ─────────────────────────────────────────────
+#  チャットメッセージからCOを検知
+# ─────────────────────────────────────────────
+
+_CO_PATTERNS = [
+    (re.compile(r'占い師\s*(CO|です|でした|をCO|として|カミングアウト)', re.IGNORECASE), RoleName.SEER),
+    (re.compile(r'占い\s*CO', re.IGNORECASE), RoleName.SEER),
+    (re.compile(r'霊(媒師?|能者?)\s*(CO|です|でした|をCO|として|カミングアウト)', re.IGNORECASE), RoleName.MEDIUM),
+    (re.compile(r'霊(媒|能)\s*CO', re.IGNORECASE), RoleName.MEDIUM),
+    (re.compile(r'狩人\s*(CO|です|でした|をCO|として|カミングアウト)', re.IGNORECASE), RoleName.HUNTER),
+    (re.compile(r'共有者?\s*(CO|です|でした|をCO|として|カミングアウト)', re.IGNORECASE), RoleName.FREEMASON),
+    (re.compile(r'共有\s*CO', re.IGNORECASE), RoleName.FREEMASON),
+]
+
+
+def _detect_co_in_message(message: str) -> Optional[RoleName]:
+    """発言内容からCO宣言を検知し、該当役職を返す"""
+    for pattern, role in _CO_PATTERNS:
+        if pattern.search(message):
+            return role
+    return None
 
 
 # ─────────────────────────────────────────────
@@ -115,6 +139,10 @@ class AICoordinator:
 
             chat_result = self.game.chat(pid, msg)
             if chat_result.get("status") == "sent":
+                # 発言からCOを検知して登録（発言によってのみCOが公開される）
+                detected_role = _detect_co_in_message(msg)
+                if detected_role and not self.state.get_co_for_player(pid):
+                    self.game.co(pid, detected_role.value)
                 data = {"player_id": pid, "name": self.state.players[pid].name, "content": msg}
                 results.append(data)
                 if self.on_message:

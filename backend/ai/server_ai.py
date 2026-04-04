@@ -198,7 +198,7 @@ async def _run_day0_night():
     if resolve_result.get("status") == "resolved":
         await asyncio.sleep(1)
         s.controller.start_discussion()
-        await s.coordinator.handle_ai_co()
+        # handle_ai_co() は廃止: COは議論発言の中でのみ公開される
 
 
 @app.get("/api/game/state")
@@ -315,6 +315,81 @@ async def websocket_endpoint(ws: WebSocket, player_id: str):
                 await ws.send_text("pong")
     except WebSocketDisconnect:
         ws_manager.disconnect(player_id)
+
+
+@app.get("/api/debug")
+async def debug_full_state():
+    """デバッグ用: 全プレイヤーの役職・夜行動・投票履歴・全チャットを返す"""
+    s = _get_session()
+    if not s:
+        return {"error": "ゲームが作成されていません"}
+    state = s.controller.state
+    return {
+        "game_id": state.game_id,
+        "phase": state.phase.value,
+        "day": state.day,
+        "players": {
+            pid: {
+                "name": p.name,
+                "role": p.role.value,
+                "is_alive": p.is_alive,
+                "is_human": p.is_human,
+                "divine_results": [
+                    {"day": r.day, "target": state.players[r.target_id].name, "result": r.result}
+                    for r in p.divine_results
+                ],
+                "medium_results": [
+                    {"day": r.day, "target": state.players[r.target_id].name, "result": r.result}
+                    for r in p.medium_results
+                ],
+            }
+            for pid, p in state.players.items()
+        },
+        "co_list": [
+            {
+                "player_id": co.player_id,
+                "name": state.players[co.player_id].name,
+                "claimed_role": co.claimed_role.value,
+                "day": co.day,
+            }
+            for co in state.co_list
+        ],
+        "vote_history": [
+            {
+                "day": v.day, "round": v.round,
+                "voter": state.players[v.voter_id].name,
+                "target": state.players[v.target_id].name,
+            }
+            for v in state.vote_history
+        ],
+        "death_records": [
+            {
+                "name": state.players[d.player_id].name,
+                "day": d.day,
+                "cause": d.cause.value,
+                "role": d.role.value,
+            }
+            for d in state.death_records
+        ],
+        "current_night_actions": [
+            {
+                "actor": state.players[a.actor_id].name,
+                "action": a.action_type,
+                "target": state.players[a.target_id].name,
+            }
+            for a in state.current_night_actions
+        ],
+        "chat_log_all": [
+            {
+                "sender_name": m.sender_name,
+                "content": m.content,
+                "channel": m.channel,
+                "day": m.day,
+                "phase": m.phase,
+            }
+            for m in state.chat_log
+        ],
+    }
 
 
 @app.get("/api/health")
