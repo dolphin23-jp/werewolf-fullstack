@@ -178,6 +178,18 @@ MEDIUM_ROLA_KNOWLEDGE = """【霊能ローラーの知識】
 霊能は占いに比べて相対的に役割が薄い（特に複数時）ため、
 全員吊ることで確実に偽1人を処理でき、その間に占い情報も蓄積する合理的な戦略。"""
 
+SEER_CONFLICT_GUIDE = """【占い対抗（複数占い師CO）時の戦略知識】
+複数の占い師がCOし黒結果が出ている場合の基本セオリー:
+- どちらかの占い師が偽物（狼か狂人の騙り）確定。真偽判定が最優先課題。
+- 【黒先吊りセオリー】黒結果を出したプレイヤーを吊り、霊能師の結果で確認するのが情報効率最大:
+  例: 占いAが「Xは黒」→ Xを吊る → 霊能「黒確認」→ 占いAが真確定 / 霊能「白確認」→ 占いAが偽確定
+  この手順により、1縄で占い師の真偽と黒プレイヤーの処理を同時に解決できる。
+- 【グレー吊りとの比較】グレー吊りは情報を集める手段だが、対抗占いがあり黒結果が出ている状況では
+  黒先吊りの方が得られる情報量が大きい。グレー吊り推しの理由が薄い場合は疑う価値がある。
+- 占い師が「黒対象を吊るな」と主張する場合は自分の偽りを隠そうとしている可能性がある。
+- 逆に「黒対象を吊れ」と主張する占い師が自分の信用維持目的で動いている可能性も0ではないが、
+  それだけで黒先吊りを否定する理由にはならない。黒先吊りはセオリー通りの合理的な判断。"""
+
 VILLAGE_ROPE_TEMPLATE = """【吊り縄の情報】
 残り縄数={rope}（生存{alive}人、{parity}）。
 狼と狐は処刑でしか処理できない。
@@ -212,3 +224,16 @@ def should_show_rola_guide(state: GameState) -> bool:
         if co.claimed_role == RoleName.MEDIUM and state.players[co.player_id].is_alive:
             medium_co_count += 1
     return medium_co_count >= 2
+
+
+def should_show_seer_conflict_guide(state: GameState) -> bool:
+    """占い対抗ガイドを表示すべきか: 占いCO者が2人以上いる場合"""
+    seer_co_count = 0
+    seen: set[str] = set()
+    for co in state.co_list:
+        if co.player_id in seen:
+            continue
+        seen.add(co.player_id)
+        if co.claimed_role == RoleName.SEER and state.players[co.player_id].is_alive:
+            seer_co_count += 1
+    return seer_co_count >= 2

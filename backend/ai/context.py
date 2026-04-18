@@ -23,9 +23,9 @@ from .strategy import (
     StrategyAnalyzer,
     SEER_NIGHT_GUIDE, HUNTER_NIGHT_GUIDE,
     WOLF_ATTACK_GUIDE, FREEMASON_CHAT_GUIDE,
-    MEDIUM_ROLA_KNOWLEDGE,
+    MEDIUM_ROLA_KNOWLEDGE, SEER_CONFLICT_GUIDE,
     build_wolf_rope_guide, build_village_rope_guide,
-    should_show_rola_guide,
+    should_show_rola_guide, should_show_seer_conflict_guide,
 )
 
 
@@ -42,7 +42,10 @@ def build_system_prompt(personality: Personality, player_name: str) -> str:
 【重要な制約】
 - 「AIとして」「プログラムとして」等のメタ発言は絶対に禁止
 - 発言は200文字以内を目安にしてください
-- 他のプレイヤーの発言内容に具体的に言及してください"""
+- 他のプレイヤーの発言内容に具体的に言及してください
+- 直前の発言を鵜呑みにせず、自分の推理に基づいた意見を持ってください
+- 同じ意見が場を支配していると感じたら、あえて別角度から検証してください
+- 他者の意見に賛同する場合も、同じ表現の繰り返しにならず独自の根拠を示してください"""
 
 
 def build_game_state_context(state: GameState, viewer_id: str) -> str:
@@ -218,7 +221,12 @@ class DaySummaryManager:
 # ─────────────────────────────────────────────
 
 # 議論発言のJSON出力指示（ai_player.pyのstring replaceを廃止するため直接定義）
-DISCUSSION_OUTPUT_INSTRUCTION = """以下のJSON形式で回答してください:
+DISCUSSION_OUTPUT_INSTRUCTION = """【独自視点の徹底】
+- 直前の発言に流されず、ゲーム情報と自分の推理に基づいて判断してください。
+- 同意する場合でも、単なる繰り返しにならず、あなた独自の根拠や新しい論点を加えてください。
+- 流れに疑問があれば積極的に異論を唱えてください。人狼ゲームは多角的な視点が重要です。
+
+以下のJSON形式で回答してください:
 {"public_message": "あなたの発言(200文字以内、人格に合った口調)", "reasoning_memo": {"trusted_seer": "", "suspects": [], "trusted": [], "execution_target": "", "overall_thought": ""}}"""
 
 
@@ -241,6 +249,10 @@ class ContextBuilder:
         # 霊能ロラガイドを条件付きで注入
         if should_show_rola_guide(self.state):
             parts.append(MEDIUM_ROLA_KNOWLEDGE)
+
+        # 占い対抗ガイドを条件付きで注入（占いCO 2人以上の場合）
+        if should_show_seer_conflict_guide(self.state):
+            parts.append(SEER_CONFLICT_GUIDE)
 
         parts.extend([
             self.summary_manager.build_context(self.state.day),
